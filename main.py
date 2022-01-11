@@ -1,7 +1,7 @@
 import requests
 import subprocess
 import numpy as np
-import os, datetime, json, time
+import os, datetime, json, time, math
 import pytesseract
 from display_progress import progress_for_pyrogram
 from pyrogram import Client, filters
