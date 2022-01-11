@@ -101,7 +101,6 @@ async def main(bot, m):
             return
 
         try:
-
             #Probably makes better recognition
             """
             import cv2  #Install opencv-python
@@ -112,7 +111,6 @@ async def main(bot, m):
             img = PIL.ImageOps.invert(img)
             img.save("temp/output.jpg")
             """
-
             if USE_CROP:
                 img = Image.open("temp/output.jpg")
                 width, height = img.size
@@ -168,10 +166,17 @@ async def main(bot, m):
             f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
+        # progress bar
         if time_to_finish >= 0:
             time_to_finish -= 0.1
+            percentage = time_to_finish * 100 / duration
+            progress = "[{0}{1}]\nppp\n\n".format(
+                ''.join(["●" for i in range(math.floor(percentage / 5))]),
+                ''.join(["○" for i in range(20 - math.floor(percentage / 5))]),
+                round(percentage, 2)
+            )
             try:
-                await msg.edit(f"Seconds to finish: `{str(time_to_finish)[:5]}`\n\nFor cancel progress, send /cancel", parse_mode='md')
+                await msg.edit(progress + "`For cancel progress, send` /cancel", parse_mode='md')
             except:
                 pass
 
