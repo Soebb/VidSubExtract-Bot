@@ -91,6 +91,7 @@ async def main(bot, m):
     last_text = " "
     duplicate = True
     lastsub_time = 0
+    time_to_finish = duration
     intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
@@ -126,7 +127,12 @@ async def main(bot, m):
             print(e)
             text = None
             pass
-
+        if not "-" in str(time_to_finish):
+            time_to_finish -= 0.1
+            try:
+                await msg.edit("Time to finish (ms): `{str(time_to_finish)[:5]}`", parse_mode='md')
+            except:
+                pass
         if text != None and text[:1].isspace() == False :
             # Check either text is duplicate or not
             commons = list(set(text.split()) & set(last_text.split()))
