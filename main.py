@@ -1,7 +1,7 @@
 import requests
 import subprocess
 import numpy as np
-import os, datetime, json, time
+import os, datetime, json, time, math, shutil
 import pytesseract
 #from display_progress import progress_for_pyrogram
 from PIL import Image
@@ -269,11 +269,6 @@ async def handler(event):
     f.close
     try:
         await Bot.send_file(event.chat_id, file=srt)
-    except:
-        pass
-    try:
-        os.remove(file_dl_path)
-        os.remove(srt)
     except:
         pass
     await msg.delete()
