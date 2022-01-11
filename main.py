@@ -16,7 +16,6 @@ API_ID = " "
 API_HASH = " "
 
 LANG = "fas"
-USE_CROP = False
 
 
 Bot = TelegramClient(BOT_NAME, API_ID, API_HASH).start(bot_token=BOT_TOKEN)
@@ -33,9 +32,9 @@ async def expor(event):
         try:
             shutil.rmtree("temp/")
         except:
-            await m.reply("can't cancel. maybe there wasn't any progress in process.")
+            await event.reply("can't cancel. maybe there wasn't any progress in process.")
         else:
-            await m.reply("canceled successfully.")
+            await event.reply("canceled successfully.")
         return
     if event.text:
         keyboard = []
@@ -183,46 +182,29 @@ async def handler(event):
     duplicate = True
     lastsub_time = 0
     srt = "temp/"+event.data.rsplit('.', 1)[0]+".srt"
-    time = duration
     intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
+    time_to_finish = duration
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
+        command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+        if command != 0:
+            return await msg.delete()
         try:
-            os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
-
-            #Probably makes better recognition
-            """
-            import cv2  #Install opencv-python-headless
-            img = cv2.imread("temp/output.jpg")
-            img = cv2.cvtColor(im, cv2.COLOR_BGR2LUV)
-            cv2.imwrite("temp/output.jpg", img)
-            import PIL.ImageOps
-            img = PIL.ImageOps.invert(img)
-            img.save("temp/output.jpg")
-            """
-
-            if USE_CROP:
-                img = Image.open("temp/output.jpg")
-                width, height = img.size
-                x1 = width // 7
-                y1 = 3 * (height // 4)
-                x2 = 6 * (width // 7)
-                y2 = height
-                crop_area = (x1, y1, x2, y2)
-                cropped = img.crop(crop_area) # Learn how to change crop parameters: https://stackoverflow.com/a/39424357
-                #cropped.show()
-                cropped.save("temp/output.jpg")
-            text = pytesseract.image_to_string("temp/output.jpg", LANG)
-        except MessageEmpty:
+            im = Image.open("temp/output.jpg")
+            text = pytesseract.image_to_string(im, LANG)
+        except:
             text = None
             pass
-        except Exception as e:
-            print(e)
-            pass
-        if not "-" in str(time):
-            time -= 0.1
+        if time_to_finish > 0:
+            time_to_finish -= 0.1
+            percentage = (duration - time_to_finish) * 100 / duration
+            progress = "[{0}{1}]\nPercentage : {2}%\n\n".format(
+                ''.join(["●" for i in range(math.floor(percentage / 5))]),
+                ''.join(["○" for i in range(20 - math.floor(percentage / 5))]),
+                round(percentage, 2)
+            )
             try:
-                await msg.edit(str(time)[:5])
+                await msg.edit(progress + "`For cancel progress, send` /cancel", parse_mode='md')
             except:
                 pass
         if text != None and text[:1].isspace() == False :
