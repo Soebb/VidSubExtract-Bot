@@ -130,7 +130,7 @@ async def main(bot, m):
         if not "-" in str(time_to_finish):
             time_to_finish -= 0.1
             try:
-                await msg.edit("Time to finish (ms): `{str(time_to_finish)[:5]}`", parse_mode='md')
+                await msg.edit(f"Time to finish (ms): `{str(time_to_finish)[:5]}`", parse_mode='md')
             except:
                 pass
         if text != None and text[:1].isspace() == False :
