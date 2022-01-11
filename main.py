@@ -29,6 +29,14 @@ refresh_button = [
 ]
 @Bot.on(events.NewMessage(incoming=True, func=lambda e: e.is_private))
 async def expor(event):
+    if event.text and "cancel" in event.text:
+        try:
+            shutil.rmtree("temp/")
+        except:
+            await m.reply("can't cancel. maybe there wasn't any progress in process.")
+        else:
+            await m.reply("canceled successfully.")
+        return
     if event.text:
         keyboard = []
         keyboard.append(refresh_button)
@@ -49,7 +57,11 @@ async def expor(event):
         keyboard.append(refresh_button)
         await event.reply("which one?", buttons=keyboard)
         return
-
+    try:
+        shutil.rmtree("temp/")
+    except:
+        pass
+    os.makedirs("temp/")
     msg = await event.reply("Downloading..")
     #c_time = time.time()
     file_dl_path = await Bot.download_media(event.media, 'temp/')
@@ -132,8 +144,6 @@ async def expor(event):
         await msg.delete()
     except:
         pass
-    os.remove(file_dl_path)
-    os.remove(srt)
 
 @Bot.on(events.CallbackQuery)
 async def handler(event):
@@ -157,7 +167,11 @@ async def handler(event):
         keyboard.append(refresh_button)
         await event.edit("which one?", buttons=keyboard)
         return
-
+    try:
+        shutil.rmtree("temp/")
+    except:
+        pass
+    os.makedirs("temp/")
     msg = await Bot.send_message(event.chat_id, "downloading..")
     file_dl_path = VideosFolder + "/" + event.data
     video_info = subprocess.check_output(f'ffprobe -v quiet -show_streams -select_streams v:0 -of json "{file_dl_path}"', shell=True).decode()
