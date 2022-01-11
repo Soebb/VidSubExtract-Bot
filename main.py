@@ -58,6 +58,7 @@ async def cancel_progress(_, m):
         await m.reply("can't cancel. maybe there wasn't any progress in process.")
     else:
         await m.reply("canceled successfully.")
+    os.remove("temp/srt.srt")
 
 #language data for ocr
 tessdata = f"https://github.com/tesseract-ocr/tessdata/raw/main/{LANG}.traineddata"
@@ -170,7 +171,7 @@ async def main(bot, m):
         if time_to_finish >= 0:
             time_to_finish -= 0.1
             percentage = time_to_finish * 100 / duration
-            progress = "[{0}{1}]\nppp\n\n".format(
+            progress = "[{0}{1}]\nPercentage : {2}%\n\n".format(
                 ''.join(["●" for i in range(math.floor(percentage / 5))]),
                 ''.join(["○" for i in range(20 - math.floor(percentage / 5))]),
                 round(percentage, 2)
