@@ -170,8 +170,8 @@ async def main(bot, m):
         # progress bar
         if time_to_finish >= 0:
             time_to_finish -= 0.1
-            percentage = time_to_finish * 100 / duration
-            progress = "[{0}{1}]\nPercentage : {2}%\n\n".format(
+            percentage = (duration - time_to_finish) * 100 / duration
+            progress = "`Processing...`\n[{0}{1}]\nPercentage : {2}%\n\n".format(
                 ''.join(["●" for i in range(math.floor(percentage / 5))]),
                 ''.join(["○" for i in range(20 - math.floor(percentage / 5))]),
                 round(percentage, 2)
