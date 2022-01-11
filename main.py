@@ -97,7 +97,9 @@ async def main(bot, m):
     for interval in intervals:
         command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
+            await msg.delete()
             return
+
         try:
 
             #Probably makes better recognition
@@ -127,12 +129,7 @@ async def main(bot, m):
             print(e)
             text = None
             pass
-        if time_to_finish >= 0:
-            time_to_finish -= 0.1
-            try:
-                await msg.edit(f"Seconds to finish: `{str(time_to_finish)[:5]}`\n\n for cancel progress, send /cancel", parse_mode='md')
-            except:
-                pass
+
         if text != None and text[:1].isspace() == False :
             # Check either text is duplicate or not
             commons = list(set(text.split()) & set(last_text.split()))
@@ -170,6 +167,13 @@ async def main(bot, m):
             ttime = f"{ttime}.000" if not "." in ttime else ttime
             f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
+
+        if time_to_finish >= 0:
+            time_to_finish -= 0.1
+            try:
+                await msg.edit(f"Seconds to finish: `{str(time_to_finish)[:5]}`\n\nFor cancel progress, send /cancel", parse_mode='md')
+            except:
+                pass
 
     f.close
     await bot.send_document(chat_id=m.chat.id, document="temp/srt.srt" , file_name=media.file_name.rsplit('.', 1)[0]+".srt")
