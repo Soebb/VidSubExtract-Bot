@@ -79,7 +79,7 @@ async def main(bot, m):
     msg = await m.reply("`Downloading..`", parse_mode='md')
     c_time = time.time()
     file_dl_path = await bot.download_media(message=m, file_name="temp/vid.mp4", progress=progress_for_pyrogram, progress_args=("Downloading..", msg, c_time))
-    await msg.edit("`Now Extracting..`\n\n for cancel progress, send /cancel", parse_mode='md')
+    await msg.edit("`Now Extracting..`", parse_mode='md')
     if m.video:
         duration = m.video.duration
     else:
@@ -127,10 +127,10 @@ async def main(bot, m):
             print(e)
             text = None
             pass
-        if not "-" in str(time_to_finish):
+        if time_to_finish >= 0:
             time_to_finish -= 0.1
             try:
-                await msg.edit(f"Time to finish (ms): `{str(time_to_finish)[:5]}`", parse_mode='md')
+                await msg.edit(f"Seconds to finish: `{str(time_to_finish)[:5]}`\n\n for cancel progress, send /cancel", parse_mode='md')
             except:
                 pass
         if text != None and text[:1].isspace() == False :
