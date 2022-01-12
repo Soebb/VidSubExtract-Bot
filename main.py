@@ -60,7 +60,11 @@ async def expor(event):
         shutil.rmtree("temp/")
     except:
         pass
-    os.makedirs("temp/")
+    time.sleep(2)
+    try:
+        os.makedirs("temp/")
+    except:
+        pass
     msg = await event.reply("Downloading..")
     #c_time = time.time()
     file_dl_path = await Bot.download_media(event.media, 'temp/')
@@ -170,7 +174,11 @@ async def handler(event):
         shutil.rmtree("temp/")
     except:
         pass
-    os.makedirs("temp/")
+    time.sleep(2)
+    try:
+        os.makedirs("temp/")
+    except:
+        pass
     msg = await Bot.send_message(event.chat_id, "downloading..")
     file_dl_path = VideosFolder + "/" + event.data
     video_info = subprocess.check_output(f'ffprobe -v quiet -show_streams -select_streams v:0 -of json "{file_dl_path}"', shell=True).decode()
