@@ -14,7 +14,7 @@ from PIL import Image
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
-LANG = "fas" #Get this from https://en.m.wikipedia.org/wiki/List_of_ISO_639-2_codes
+LANG = "eng" #Get this from https://en.m.wikipedia.org/wiki/List_of_ISO_639-2_codes
 USE_CROP = os.environ.get("USE_CROP") #[Optional] Set to ANYTHING to enable crop mode
 
 Bot = Client(
@@ -140,11 +140,11 @@ async def main(bot, m):
                 repeated_count += 1
             else:
                 duplicate = False
-                lastsub_time = interval
+                #lastsub_time = interval
 
         # time of the last dialogue
-        #if duplicate == False:
-            #lastsub_time = interval
+        if duplicate == False:
+            lastsub_time = interval
                 
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
