@@ -141,9 +141,9 @@ async def main(bot, m):
             else:
                 duplicate = False
 
-            # time of the last dialogue
-            if duplicate == False:
-                lastsub_time = interval
+        # time of the last dialogue
+        if duplicate == False:
+            lastsub_time = interval
                 
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
