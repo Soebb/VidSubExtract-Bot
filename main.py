@@ -95,7 +95,7 @@ async def main(bot, m):
     intervals = get_intervals(duration)
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
-        command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             await msg.delete()
             return
@@ -156,7 +156,7 @@ async def main(bot, m):
             last_text = text
 
         # Write the last dialogue
-        if interval == duration:
+        if interval/1000 == duration:
             ftime = ms_to_time(lastsub_time)
             ttime = ms_to_time(lastsub_time+10000)
             f = open("temp/srt.srt", "a+", encoding="utf-8")
