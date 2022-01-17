@@ -199,6 +199,9 @@ def get_intervals(duration):
 
 
 def ms_to_time(interval):
+    ms2time = "0" + str(datetime.timedelta(milliseconds=interval))
+    return ms2time
+
 
 
 Bot.run()
