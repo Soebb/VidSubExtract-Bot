@@ -90,11 +90,12 @@ async def main(bot, m):
     duplicate = True
     lastsub_time = 0
     time_to_finish = duration
+    intervals = get_intervals(duration)
     intervals = []
     for i in range(0, round(duration)+1):
-        #intervals.append(int(i)*1000)
         for x in range(0, 10):
-            intervals.append((int(i)+i*)*1000)
+            interval = (int(i
+            intervals.append(interval)
 
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
@@ -192,6 +193,10 @@ async def main(bot, m):
         await msg.delete()
     os.remove(file_dl_path)
     os.remove("temp/srt.srt")
+
+
+
+def get_intervals(duration):
 
 
 
