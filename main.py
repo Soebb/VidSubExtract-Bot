@@ -145,7 +145,7 @@ async def main(bot, m):
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = ms_to_time(interval-0.1-repeated_count*0.1)
+                from_time = ms_to_time(interval-1000-repeated_count*1000)
                 to_time = ms_to_time(interval)
                 from_time = f"{from_time}.000" if not "." in from_time else from_time
                 to_time = f"{to_time}.000" if not "." in to_time else to_time
