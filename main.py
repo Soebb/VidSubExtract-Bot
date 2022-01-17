@@ -90,10 +90,12 @@ async def main(bot, m):
     duplicate = True
     lastsub_time = 0
     time_to_finish = duration
+    intervals = []
     for i in range(0, round(duration)+1):
-        intervals.append(int(i)*1000)
-        for i in
-    intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
+        #intervals.append(int(i)*1000)
+        for x in range(0, 10):
+            intervals.append((int(i)+i*)*1000)
+
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
         command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
