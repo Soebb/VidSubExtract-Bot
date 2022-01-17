@@ -93,7 +93,7 @@ async def main(bot, m):
     lastsub_time = 0
     time_to_finish = duration
     intervals = get_intervals(duration)
-    return await m.reply(f"{intervals[:20]}")
+    #return await m.reply(f"{intervals[:20]}")
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
         command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
@@ -149,20 +149,22 @@ async def main(bot, m):
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
                 from_time = ms_to_time(interval-1000-(repeated_count*1000))
+                if "day" in from_time:
+                    await m.reply(f"{interval}    {from_time}")
                 to_time = ms_to_time(interval)
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
                 duplicate = True
                 repeated_count = 0
             last_text = text
-
+        """
         # Write the last dialogue
         if interval/1000 == duration:
             ftime = ms_to_time(lastsub_time)
             ttime = ms_to_time(lastsub_time+10000)
             f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
-
+        """
         # progress bar
         if time_to_finish > 0:
             time_to_finish -= 0.1
