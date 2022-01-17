@@ -1,5 +1,4 @@
 import requests
-import numpy as np
 import os, datetime, json, time, math, subprocess
 import pytesseract
 from display_progress import progress_for_pyrogram
@@ -91,8 +90,8 @@ async def main(bot, m):
     duplicate = True
     lastsub_time = 0
     time_to_finish = duration
-    for i in range(round(duration)):
-        intervals.append((-1+int(i))*1000)
+    for i in range(0, round(duration)+1):
+        intervals.append(int(i)*1000)
         for i in
     intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
     # Extract frames every 100 milliseconds for ocr
