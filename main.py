@@ -6,6 +6,8 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from PIL import Image
 
+
+
 #pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # config vars
@@ -103,7 +105,7 @@ async def main(bot, m):
             """
             import cv2  #Install opencv-python
             img = cv2.imread("temp/output.jpg")
-            img = cv2.cvtColor(im, cv2.COLOR_BGR2LUV)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2LUV)
             cv2.imwrite("temp/output.jpg", img)
             import PIL.ImageOps
             img = PIL.ImageOps.invert(img)
@@ -147,8 +149,6 @@ async def main(bot, m):
                 sub_count += 1
                 from_time = ms_to_time(interval-1000-repeated_count*1000)
                 to_time = ms_to_time(interval)
-                from_time = f"{from_time}.000" if not "." in from_time else from_time
-                to_time = f"{to_time}.000" if not "." in to_time else to_time
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
                 duplicate = True
@@ -159,8 +159,6 @@ async def main(bot, m):
         if interval == duration:
             ftime = ms_to_time(lastsub_time)
             ttime = ms_to_time(lastsub_time+10000)
-            ftime = f"{ftime}.000" if not "." in ftime else ftime
-            ttime = f"{ttime}.000" if not "." in ttime else ttime
             f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
@@ -199,7 +197,8 @@ def get_intervals(duration):
 
 
 def ms_to_time(interval):
-    ms2time = "0" + str(datetime.timedelta(milliseconds=interval))
+    ms2time = "0" + str(datetime.timedelta(milliseconds=interval))[:11]
+    ms2time = f"{ms2time}.000" if not "." in ms2time else ms2time
     return ms2time
 
 
