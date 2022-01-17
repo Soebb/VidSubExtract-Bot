@@ -91,12 +91,6 @@ async def main(bot, m):
     lastsub_time = 0
     time_to_finish = duration
     intervals = get_intervals(duration)
-    intervals = []
-    for i in range(0, round(duration)+1):
-        for x in range(0, 10):
-            interval = (int(i
-            intervals.append(interval)
-
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
         command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
@@ -151,8 +145,8 @@ async def main(bot, m):
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = str(datetime.datetime.fromtimestamp(interval-0.1-repeated_count*0.1)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-                to_time = str(datetime.datetime.fromtimestamp(interval)+datetime.timedelta(hours=0)).split(' ')[1][:12]
+                from_time = ms_to_time(interval-0.1-repeated_count*0.1)
+                to_time = ms_to_time(interval)
                 from_time = f"{from_time}.000" if not "." in from_time else from_time
                 to_time = f"{to_time}.000" if not "." in to_time else to_time
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
@@ -163,8 +157,8 @@ async def main(bot, m):
 
         # Write the last dialogue
         if interval == duration:
-            ftime = str(datetime.datetime.fromtimestamp(lastsub_time)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-            ttime = str(datetime.datetime.fromtimestamp(lastsub_time+10)+datetime.timedelta(hours=0)).split(' ')[1][:12]
+            ftime = ms_to_time(lastsub_time)
+            ttime = ms_to_time(lastsub_time+10000)
             ftime = f"{ftime}.000" if not "." in ftime else ftime
             ttime = f"{ttime}.000" if not "." in ttime else ttime
             f = open("temp/srt.srt", "a+", encoding="utf-8")
@@ -195,9 +189,16 @@ async def main(bot, m):
     os.remove("temp/srt.srt")
 
 
-
 def get_intervals(duration):
+    intervals = []
+    for i in range(0, round(duration)+1):
+        for x in range(0, 10):
+            interval = (i+(x/10))*1000
+            intervals.append(interval)
+    return intervals
 
+
+def ms_to_time(interval):
 
 
 Bot.run()
