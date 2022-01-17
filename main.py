@@ -1,7 +1,6 @@
 import requests
-import subprocess
 import numpy as np
-import os, datetime, json, time, math
+import os, datetime, json, time, math, subprocess
 import pytesseract
 from display_progress import progress_for_pyrogram
 from pyrogram import Client, filters
@@ -14,7 +13,7 @@ from PIL import Image
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 API_ID = os.environ.get("API_ID")
 API_HASH = os.environ.get("API_HASH")
-LANG = "eng" #Get this from https://en.m.wikipedia.org/wiki/List_of_ISO_639-2_codes
+LANG = os.environ.get("SUBTITLE_LANG") #Get this from https://en.m.wikipedia.org/wiki/List_of_ISO_639-2_codes
 USE_CROP = os.environ.get("USE_CROP") #[Optional] Set to ANYTHING to enable crop mode
 
 Bot = Client(
@@ -27,9 +26,7 @@ Bot = Client(
 START_TXT = """
 Hi {}
 I am Subtitle Extractor Bot.
-
 > `I can extract hard-coded subtitle from videos.`
-
 Send me a video to get started.
 """
 
@@ -58,6 +55,7 @@ async def cancel_progress(_, m):
         await m.reply("can't cancel. maybe there wasn't any progress in process.")
     else:
         await m.reply("canceled successfully.")
+    await m.delete()
     os.remove("temp/srt.srt")
 
 #language data for ocr
@@ -93,6 +91,9 @@ async def main(bot, m):
     duplicate = True
     lastsub_time = 0
     time_to_finish = duration
+    for i in range(round(duration)):
+        intervals.append((-1+int(i))*1000)
+        for i in
     intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
@@ -140,11 +141,10 @@ async def main(bot, m):
                 repeated_count += 1
             else:
                 duplicate = False
-                #lastsub_time = interval
 
-        # time of the last dialogue
-        if duplicate == False:
-            lastsub_time = interval
+            # to store start-time of the lastest dialogue
+            if duplicate == False:
+                lastsub_time = interval
                 
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
@@ -169,7 +169,7 @@ async def main(bot, m):
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
         # progress bar
-        if time_to_finish >= 0:
+        if time_to_finish > 0:
             time_to_finish -= 0.1
             percentage = (duration - time_to_finish) * 100 / duration
             progress = "`Processing...`\n[{0}{1}]\nPercentage : {2}%\n\n".format(
@@ -183,15 +183,15 @@ async def main(bot, m):
                 pass
 
     f.close
-    os.remove(file_dl_path)
     try:
         await bot.send_document(chat_id=m.chat.id, document="temp/srt.srt" , file_name=media.file_name.rsplit('.', 1)[0]+".srt")
     except ValueError:
-        return await msg.edit("Not any text detected.")
-    except Exception as e:
-        return await msg.edit("ERROR:\n"+e)
-    await msg.delete()
+        await msg.edit("Not any text detected.")
+    else:
+        await msg.delete()
+    os.remove(file_dl_path)
     os.remove("temp/srt.srt")
+
 
 
 Bot.run()
