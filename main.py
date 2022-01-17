@@ -148,9 +148,10 @@ async def main(bot, m):
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = ms_to_time(interval-1000-(repeated_count*1000))
+                H=interval-1000-(repeated_count*1000)
+                from_time = ms_to_time(H)
                 if "day" in from_time:
-                    await m.reply(f"{interval}    {from_time}")
+                    await m.reply(f"{H}   {interval}    {from_time}")
                 to_time = ms_to_time(interval)
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
