@@ -92,19 +92,15 @@ async def main(bot, m):
     duplicate = True
     lastsub_pos = 0
     time_to_finish = duration
-    intervals = []
-    for sec in range(0, duration+1):
-        for step in range(9):
-            interval = "0" + str(datetime.timedelta(seconds=sec, milliseconds=step*1000))[:11]
-            interval = f"{interval}.000" if not "." in interval else interval
-            intervals.append(interval)
+    intervals = get_intervals(duration)
+
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
         command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             await msg.delete()
             return
-
+        interval_pos = intervals.index(interval)
         try:
             #Probably makes better recognition
             """
@@ -147,12 +143,12 @@ async def main(bot, m):
 
             # the lastest dialogue
             if duplicate == False:
-                lastsub_pos = intervals.index(interval)
+                lastsub_pos = interval_pos
                 
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = intervals[intervals.index(interval)-10-(repeated_count*10)]
+                from_time = intervals[interval_pos-10-(repeated_count*10)]
                 to_time = interval
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
@@ -161,7 +157,7 @@ async def main(bot, m):
             last_text = text
 
         # Write the last dialogue
-        if intervals.index(interval)/10 == duration:
+        if interval_pos/10 == duration:
             ftime = intervals[lastsub_pos]
             ttime = intervals[lastsub_pos+100]
             f = open("temp/srt.srt", "a+", encoding="utf-8")
@@ -191,6 +187,15 @@ async def main(bot, m):
     os.remove(file_dl_path)
     os.remove("temp/srt.srt")
 
+
+def get_intervals(duration):
+    intervals = []
+    for sec in range(0, duration+1):
+        for step in range(9):
+            interval = "0" + str(datetime.timedelta(seconds=sec, milliseconds=step*1000))[:11]
+            interval = f"{interval}.000" if not "." in interval else interval
+            intervals.append(interval)
+    return intervals
 
 
 
