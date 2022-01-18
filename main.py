@@ -197,7 +197,7 @@ def get_intervals(duration):
 
 
 def ms_to_time(interval):
-    ms2time = "0" + str(datetime.timedelta(days=1, milliseconds=interval)).split(', ')[1][:11]
+    ms2time = "0" + str(datetime.timedelta(weeks=99999, milliseconds=interval)).split()[2][:11]
     ms2time = f"{ms2time}.000" if not "." in ms2time else ms2time
     return ms2time
 
