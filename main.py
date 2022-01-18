@@ -90,7 +90,7 @@ async def main(bot, m):
     repeated_count = 0
     last_text = " "
     duplicate = True
-    lastsub = 0
+    lastsub_pos = 0
     time_to_finish = duration
     intervals = []
     for sec in range(0, duration+1):
@@ -147,13 +147,13 @@ async def main(bot, m):
 
             # to store start-time of the lastest dialogue
             if duplicate == False:
-                lastsub = intervals.index(interval)
+                lastsub_pos = intervals.index(interval)
                 
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = ms_to_time(interval-1000-(repeated_count*1000))
-                to_time = ms_to_time(interval)
+                from_time = interval repeated_count)
+                to_time = interval
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
                 duplicate = True
@@ -161,9 +161,9 @@ async def main(bot, m):
             last_text = text
 
         # Write the last dialogue
-        if interval/1000 == duration:
-            ftime = intervals[lastsub]
-            ttime = intervals[lastsub+100]
+        if intervals.index(interval)/10 == duration:
+            ftime = intervals[lastsub_pos]
+            ttime = intervals[lastsub_pos+100]
             f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
