@@ -193,7 +193,7 @@ def get_intervals(duration):
     for sec in range(0, duration+1):
         sec_to_time = time.strftime("%H:%M:%S", time.gmtime(sec))
         for step in range(9):
-            with_ms = sec_to_time + '.{step}00'
+            with_ms = sec_to_time + f'.{step}00'
             intervals.append(with_ms)
     return intervals
 
