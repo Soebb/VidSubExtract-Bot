@@ -90,11 +90,16 @@ async def main(bot, m):
     repeated_count = 0
     last_text = " "
     duplicate = True
-    lastsub_time = 0
+    lastsub = 0
     time_to_finish = duration
-    intervals = get_intervals(duration)
+    intervals = []
+    for sec in range(0, duration+1):
+        for step in range(9):
+            interval = "0" + str(datetime.timedelta(seconds=sec, milliseconds=step*1000))[:11]
+            interval = f"{interval}.000" if not "." in interval else interval
+            intervals.append(interval)
     # Extract frames every 100 milliseconds for ocr
-    for i in range(duration*10):
+    for interval in intervals:
         command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             await msg.delete()
@@ -142,7 +147,7 @@ async def main(bot, m):
 
             # to store start-time of the lastest dialogue
             if duplicate == False:
-                lastsub_time = interval
+                lastsub = intervals.index(interval)
                 
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
@@ -157,8 +162,8 @@ async def main(bot, m):
 
         # Write the last dialogue
         if interval/1000 == duration:
-            ftime = ms_to_time(lastsub_time)
-            ttime = ms_to_time(lastsub_time+10000)
+            ftime = intervals[lastsub]
+            ttime = intervals[lastsub+100]
             f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
@@ -186,15 +191,6 @@ async def main(bot, m):
     os.remove(file_dl_path)
     os.remove("temp/srt.srt")
 
-
-def get_intervals(duration):
-    intervals = []
-    for sec in range(0, round(duration)+1):
-        for step in range(9):
-            interval = "0" + str(datetime.timedelta(seconds=sec, milliseconds=step*1000))[:11]
-            interval = f"{interval}.000" if not "." in interval else interval
-            intervals.append(interval)
-    return intervals
 
 
 
