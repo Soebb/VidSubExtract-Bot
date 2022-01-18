@@ -94,8 +94,8 @@ async def main(bot, m):
     time_to_finish = duration
     intervals = get_intervals(duration)
     # Extract frames every 100 milliseconds for ocr
-    for interval in intervals:
-        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+    for i in range(duration*10):
+        command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             await msg.delete()
             return
@@ -189,17 +189,12 @@ async def main(bot, m):
 
 def get_intervals(duration):
     intervals = []
-    for i in range(0, round(duration)+1):
-        for x in range(0, 10):
-            interval = (i+(x/10))*1000
+    for sec in range(0, round(duration)+1):
+        for step in range(9):
+            interval = "0" + str(datetime.timedelta(seconds=sec, milliseconds=step*1000))[:11]
+            interval = f"{interval}.000" if not "." in interval else interval
             intervals.append(interval)
     return intervals
-
-
-def ms_to_time(interval):
-    ms2time = "0" + str(datetime.timedelta(weeks=99999, milliseconds=interval)).split()[2][:11]
-    ms2time = f"{ms2time}.000" if not "." in ms2time else ms2time
-    return ms2time
 
 
 
