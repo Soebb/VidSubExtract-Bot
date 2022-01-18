@@ -148,7 +148,7 @@ async def main(bot, m):
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = intervals[interval_pos-10-(repeated_count*10)]
+                from_time = intervals[interval_pos-1-repeated_count]
                 to_time = interval
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
