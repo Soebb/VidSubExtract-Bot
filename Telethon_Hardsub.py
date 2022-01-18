@@ -77,11 +77,11 @@ async def expor(event):
     duplicate = True
     lastsub_time = 0
     srt = "temp/"+event.file_name.rsplit('.', 1)[0]+".srt"
-    intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
+    intervals = get_intervals(duration)
     time_to_finish = duration
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
-        command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             return await msg.delete()
         try:
@@ -121,23 +121,19 @@ async def expor(event):
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = str(datetime.datetime.fromtimestamp(interval-0.1-repeated_count*0.1)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-                to_time = str(datetime.datetime.fromtimestamp(interval)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-                from_time = f"{from_time}.000" if not "." in from_time else from_time
-                to_time = f"{to_time}.000" if not "." in to_time else to_time
-                f = open(srt, "a+", encoding="utf-8")
+                from_time = ms_to_time(interval-100-repeated_count*100)
+                to_time = ms_to_time(interval)
+                f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
                 duplicate = True
                 repeated_count = 0
             last_text = text
 
         # Write the last dialogue
-        if interval == duration:
-            ftime = str(datetime.datetime.fromtimestamp(lastsub_time)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-            ttime = str(datetime.datetime.fromtimestamp(lastsub_time+10)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-            ftime = f"{ftime}.000" if not "." in ftime else ftime
-            ttime = f"{ttime}.000" if not "." in ttime else ttime
-            f = open(srt, "a+", encoding="utf-8")
+        if interval/1000 == duration:
+            ftime = ms_to_time(lastsub_time)
+            ttime = ms_to_time(lastsub_time+10000)
+            f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
     f.close
@@ -189,11 +185,11 @@ async def handler(event):
     duplicate = True
     lastsub_time = 0
     srt = "temp/"+event.data.rsplit('.', 1)[0]+".srt"
-    intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
+    intervals = get_intervals(duration)
     time_to_finish = duration
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
-        command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             return await msg.delete()
         try:
@@ -233,23 +229,19 @@ async def handler(event):
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = str(datetime.datetime.fromtimestamp(interval-0.1-repeated_count*0.1)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-                to_time = str(datetime.datetime.fromtimestamp(interval)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-                from_time = f"{from_time}.000" if not "." in from_time else from_time
-                to_time = f"{to_time}.000" if not "." in to_time else to_time
-                f = open(srt, "a+", encoding="utf-8")
+                from_time = ms_to_time(interval-100-repeated_count*100)
+                to_time = ms_to_time(interval)
+                f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
                 duplicate = True
                 repeated_count = 0
             last_text = text
 
         # Write the last dialogue
-        if interval == duration:
-            ftime = str(datetime.datetime.fromtimestamp(lastsub_time)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-            ttime = str(datetime.datetime.fromtimestamp(lastsub_time+10)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-            ftime = f"{ftime}.000" if not "." in ftime else ftime
-            ttime = f"{ttime}.000" if not "." in ttime else ttime
-            f = open(srt, "a+", encoding="utf-8")
+        if interval/1000 == duration:
+            ftime = ms_to_time(lastsub_time)
+            ttime = ms_to_time(lastsub_time+10000)
+            f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
     f.close
