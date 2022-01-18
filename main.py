@@ -92,7 +92,7 @@ async def main(bot, m):
     intervals = get_intervals(duration)
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
-        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "temp/vid.mp4" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             await ms.delete()
             return
