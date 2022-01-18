@@ -1,5 +1,5 @@
 import requests
-import os, datetime, json, time, math, subprocess
+import os, json, time, math, subprocess
 import pytesseract
 from display_progress import progress_for_pyrogram
 from pyrogram import Client, filters
@@ -191,10 +191,10 @@ async def main(bot, m):
 def get_intervals(duration):
     intervals = []
     for sec in range(0, duration+1):
+        sec_to_time = time.strftime("%H:%M:%S", time.gmtime(sec))
         for step in range(9):
-            interval = "0" + str(datetime.timedelta(seconds=sec, milliseconds=step*1000))[:11]
-            interval = f"{interval}.000" if not "." in interval else interval
-            intervals.append(interval)
+            with_ms = sec_to_time + '.' + str(step*100)
+            intervals.append(with_ms)
     return intervals
 
 
