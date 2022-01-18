@@ -1,5 +1,4 @@
 import requests
-import numpy as np
 import os, datetime, subprocess, shutil, json, math, time
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -87,19 +86,58 @@ async def main(bot, m):
     last_text = " "
     duplicate = True
     lastsub_time = 0
-    intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
+    #intervals = [round(num, 2) for num in np.linspace(0,duration,(duration-0)*int(1/0.1)+1).tolist()]
     time_to_finish = duration
     # Extract frames every 100 milliseconds for ocr
+    intervals = get_intervals(duration)
+    # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
-        command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
-            return await ms.delete()
+            await ms.delete()
+            return
+
         try:
             im = Image.open("temp/output.jpg")
             text = pytesseract.image_to_string(im, LANG)
         except:
             text = None
             pass
+
+        if text != None and text[:1].isspace() == False :
+            # Check either text is duplicate or not
+            commons = list(set(text.split()) & set(last_text.split()))
+            if (len(text.split()) <= 3 and len(commons) != 0) or (len(text.split()) == 4 and len(commons) > 1):
+                duplicate = True
+                repeated_count += 1
+            elif len(text.split()) > 4 and len(commons) > 2:
+                duplicate = True
+                repeated_count += 1
+            else:
+                duplicate = False
+
+            # to store start-time of the lastest dialogue
+            if duplicate == False:
+                lastsub_time = interval
+                
+            # Write the dialogues text
+            if repeated_count != 0 and duplicate == False:
+                sub_count += 1
+                from_time = ms_to_time(interval-100-repeated_count*100)
+                to_time = ms_to_time(interval)
+                f = open("temp/srt.srt", "a+", encoding="utf-8")
+                f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
+                duplicate = True
+                repeated_count = 0
+            last_text = text
+
+        # Write the last dialogue
+        if interval/1000 == duration:
+            ftime = ms_to_time(lastsub_time)
+            ttime = ms_to_time(lastsub_time+10000)
+            f = open("temp/srt.srt", "a+", encoding="utf-8")
+            f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
+
         if time_to_finish > 0:
             time_to_finish -= 0.1
             percentage = (duration - time_to_finish) * 100 / duration
@@ -112,43 +150,6 @@ async def main(bot, m):
                 await ms.edit(progress + "`For cancel progress, send` /cancel", parse_mode='md')
             except:
                 pass
-        if text != None and text[:1].isspace() == False :
-            # Check either text is duplicate or not
-            commons = list(set(text.rsplit()) & set(last_text.rsplit()))
-            if len(text.rsplit()) < 3 and len(commons) >= 1:
-                duplicate = True
-                repeated_count += 1
-            elif len(text.rsplit()) >= 3 and len(commons) >= 3:
-                duplicate = True
-                repeated_count += 1
-            else:
-                duplicate = False
-
-            # time of the last dialogue
-            if duplicate == False:
-                lastsub_time = interval
-                
-            # Write the dialogues text
-            if repeated_count != 0 and duplicate == False:
-                sub_count += 1
-                from_time = str(datetime.datetime.fromtimestamp(interval-0.1-repeated_count*0.1)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-                to_time = str(datetime.datetime.fromtimestamp(interval)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-                from_time = f"{from_time}.000" if not "." in from_time else from_time
-                to_time = f"{to_time}.000" if not "." in to_time else to_time
-                f = open("temp/srt.srt", "a+", encoding="utf-8")
-                f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
-                duplicate = True
-                repeated_count = 0
-            last_text = text
-
-        # Write the last dialogue
-        if interval == duration:
-            ftime = str(datetime.datetime.fromtimestamp(lastsub_time)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-            ttime = str(datetime.datetime.fromtimestamp(lastsub_time+10)+datetime.timedelta(hours=0)).split(' ')[1][:12]
-            ftime = f"{ftime}.000" if not "." in ftime else ftime
-            ttime = f"{ttime}.000" if not "." in ttime else ttime
-            f = open("temp/srt.srt", "a+", encoding="utf-8")
-            f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
     f.close
     await bot.send_document(chat_id=m.chat.id, document="temp/srt.srt", file_name=media.file_name.rsplit('.', 1)[0]+".srt")
