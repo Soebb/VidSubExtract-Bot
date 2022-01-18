@@ -1,5 +1,5 @@
 import requests
-import os, json, time, math, subprocess
+import os, datetime, json, time, math, subprocess
 import pytesseract
 from display_progress import progress_for_pyrogram
 from pyrogram import Client, filters
@@ -90,17 +90,16 @@ async def main(bot, m):
     repeated_count = 0
     last_text = " "
     duplicate = True
-    lastsub_pos = 0
+    lastsub_time = 0
     time_to_finish = duration
     intervals = get_intervals(duration)
-
     # Extract frames every 100 milliseconds for ocr
     for interval in intervals:
-        command = os.system(f'ffmpeg -ss {interval} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
+        command = os.system(f'ffmpeg -ss {ms_to_time(interval)} -i "{file_dl_path}" -pix_fmt yuvj422p -vframes 1 -q:v 2 -y temp/output.jpg')
         if command != 0:
             await msg.delete()
             return
-        interval_pos = intervals.index(interval)
+
         try:
             #Probably makes better recognition
             """
@@ -141,15 +140,15 @@ async def main(bot, m):
             else:
                 duplicate = False
 
-            # the lastest dialogue
+            # to store start-time of the lastest dialogue
             if duplicate == False:
-                lastsub_pos = interval_pos
+                lastsub_time = interval
                 
             # Write the dialogues text
             if repeated_count != 0 and duplicate == False:
                 sub_count += 1
-                from_time = intervals[interval_pos-1-repeated_count]
-                to_time = interval
+                from_time = ms_to_time(interval-100-repeated_count*100)
+                to_time = ms_to_time(interval)
                 f = open("temp/srt.srt", "a+", encoding="utf-8")
                 f.write(str(sub_count) + "\n" + from_time + " --> " + to_time + "\n" + last_text + "\n\n")
                 duplicate = True
@@ -157,9 +156,9 @@ async def main(bot, m):
             last_text = text
 
         # Write the last dialogue
-        if interval_pos/10 == duration:
-            ftime = intervals[lastsub_pos]
-            ttime = intervals[lastsub_pos+100]
+        if interval/1000 == duration:
+            ftime = ms_to_time(lastsub_time)
+            ttime = ms_to_time(lastsub_time+10000)
             f = open("temp/srt.srt", "a+", encoding="utf-8")
             f.write(str(sub_count+1) + "\n" + ftime + " --> " + ttime + "\n" + last_text + "\n\n")
 
@@ -190,13 +189,17 @@ async def main(bot, m):
 
 def get_intervals(duration):
     intervals = []
-    for sec in range(0, duration+1):
-        sec_to_time = time.strftime("%H:%M:%S", time.gmtime(sec))
-        for step in range(9):
-            with_ms = sec_to_time + f'.{step}00'
-            intervals.append(with_ms)
+    for i in range(0, round(duration)+1):
+        for x in range(0, 10):
+            interval = (i+(x/10))*1000
+            intervals.append(interval)
     return intervals
 
+
+def ms_to_time(interval):
+    ms2time = "0" + str(datetime.timedelta(milliseconds=interval))[:11]
+    ms2time = f"{ms2time}.000" if not "." in ms2time else ms2time
+    return ms2time
 
 
 Bot.run()
