@@ -154,5 +154,19 @@ async def main(bot, m):
     f.close
     await bot.send_document(chat_id=m.chat.id, document="temp/srt.srt", file_name=media.file_name.rsplit('.', 1)[0]+".srt")
 
+def get_intervals(duration):
+    intervals = []
+    for i in range(0, duration+1):
+        for x in range(0, 10):
+            interval = (i+(x/10))*1000
+            intervals.append(interval)
+    return intervals
+
+
+def ms_to_time(interval):
+    ms2time = "0" + str(datetime.timedelta(milliseconds=interval))[:11]
+    ms2time = f"{ms2time}.000" if not "." in ms2time else ms2time
+    return ms2time
+
 
 Bot.run()
