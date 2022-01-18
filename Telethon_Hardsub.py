@@ -1,6 +1,5 @@
 import requests
 import subprocess
-import numpy as np
 import os, datetime, json, time, math, shutil
 import pytesseract
 #from display_progress import progress_for_pyrogram
@@ -259,6 +258,21 @@ async def handler(event):
     except:
         pass
     await msg.delete()
+
+
+def get_intervals(duration):
+    intervals = []
+    for i in range(0, duration+1):
+        for x in range(0, 10):
+            interval = (i+(x/10))*1000
+            intervals.append(interval)
+    return intervals
+
+
+def ms_to_time(interval):
+    ms2time = "0" + str(datetime.timedelta(milliseconds=interval))[:11]
+    ms2time = f"{ms2time}.000" if not "." in ms2time else ms2time
+    return ms2time
 
 
 Bot.run_until_disconnected()
