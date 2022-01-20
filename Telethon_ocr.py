@@ -64,10 +64,10 @@ async def expor(event):
         os.makedirs("temp/")
     except:
         pass
-    msg = await event.reply("Downloading..")
+    msg = await event.reply("`Downloading..`")
     #c_time = time.time()
     file_dl_path = await Bot.download_media(event.media, 'temp/')
-    await msg.edit("Now Extracting..")
+    await msg.edit("`Now Extracting..`")
     video_info = subprocess.check_output(f'ffprobe -v quiet -show_streams -select_streams v:0 -of json "{file_dl_path}"', shell=True).decode()
     fields = json.loads(video_info)['streams'][0]
     duration = int(fields['duration'].split(".")[0])
@@ -99,7 +99,7 @@ async def expor(event):
                 round(percentage, 2)
             )
             try:
-                await msg.edit(progress + "`For cancel progress, send` /cancel", parse_mode='md')
+                await msg.edit(progress + "`For cancel progress, send` /cancel")
             except:
                 pass
         if text != None and text[:1].isspace() == False :
@@ -174,7 +174,7 @@ async def handler(event):
         os.makedirs("temp/")
     except:
         pass
-    msg = await Bot.send_message(event.chat_id, "downloading..")
+    msg = await Bot.send_message(event.chat_id, "`downloading..`")
     file_dl_path = VideosFolder + "/" + event.data
     video_info = subprocess.check_output(f'ffprobe -v quiet -show_streams -select_streams v:0 -of json "{file_dl_path}"', shell=True).decode()
     fields = json.loads(video_info)['streams'][0]
@@ -207,7 +207,7 @@ async def handler(event):
                 round(percentage, 2)
             )
             try:
-                await msg.edit(progress + "`For cancel progress, send` /cancel", parse_mode='md')
+                await msg.edit(progress + "`For cancel progress, send` /cancel")
             except:
                 pass
         if text != None and text[:1].isspace() == False :
