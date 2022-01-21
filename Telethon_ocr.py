@@ -145,7 +145,7 @@ async def expor(event):
 
 @Bot.on(events.CallbackQuery)
 async def handler(event):
-    if event.data=="refresh":
+    if event.data==b"refresh":
         keyboard = []
         keyboard.append(refresh_button)
         try:
@@ -175,7 +175,7 @@ async def handler(event):
     except:
         pass
     msg = await Bot.send_message(event.chat_id, "`downloading..`")
-    file_dl_path = VideosFolder + "/" + event.data
+    file_dl_path = VideosFolder + "/" + event.data.decode('utf-8')
     video_info = subprocess.check_output(f'ffprobe -v quiet -show_streams -select_streams v:0 -of json "{file_dl_path}"', shell=True).decode()
     fields = json.loads(video_info)['streams'][0]
     duration = int(fields['duration'].split(".")[0])
@@ -184,7 +184,7 @@ async def handler(event):
     last_text = " "
     duplicate = True
     lastsub_time = 0
-    srt = "temp/"+event.data.rsplit('.', 1)[0]+".srt"
+    srt = "temp/"+event.data.decode('utf-8').rsplit('.', 1)[0]+".srt"
     intervals = get_intervals(duration)
     time_to_finish = duration
     # Extract frames every 100 milliseconds for ocr
