@@ -6,9 +6,6 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from PIL import Image
 import keyboard
-import pygetwindow as gw
-
-win = gw.getActivateWindow()
 
 #pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
@@ -52,7 +49,7 @@ async def start(bot, update):
 
 @Bot.on_message(filters.command(["stop"]))
 async def cancel_progress(_, m):
-    win.activate()
+    #win.activate()
     keyboard.press_and_release('pause')
 
 #language data for ocr
