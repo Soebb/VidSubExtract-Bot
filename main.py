@@ -50,14 +50,7 @@ async def start(bot, update):
 
 @Bot.on_message(filters.command(["cancel"]))
 async def cancel_progress(_, m):
-    try:
-        os.remove("temp/vid.mp4")
-    except:
-        await m.reply("can't cancel. maybe there wasn't any progress in process.")
-    else:
-        await m.reply("canceled successfully.")
-    await m.delete()
-    os.remove("temp/srt.srt")
+    os.system('q')
 
 #language data for ocr
 tessdata = f"https://github.com/tesseract-ocr/tessdata/raw/main/{LANG}.traineddata"
