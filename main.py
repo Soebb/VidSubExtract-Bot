@@ -70,6 +70,7 @@ async def main(bot, m):
         return
     media = m.video or m.document
     msg = await m.reply("`Downloading..`", parse_mode='md')
+    exit()
     c_time = time.time()
     file_dl_path = await bot.download_media(message=m, file_name="temp/vid.mp4", progress=progress_for_pyrogram, progress_args=("Downloading..", msg, c_time))
     await msg.edit("`Now Extracting..`", parse_mode='md')
