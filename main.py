@@ -5,8 +5,10 @@ from display_progress import progress_for_pyrogram
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from PIL import Image
+import keyboard
+import pygetwindow as gw
 
-
+win = gw.getActivateWindow()
 
 #pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
@@ -48,9 +50,10 @@ async def start(bot, update):
         reply_markup=reply_markup
     )
 
-@Bot.on_message(filters.command(["cancel"]))
+@Bot.on_message(filters.command(["stop"]))
 async def cancel_progress(_, m):
-    os.system('q')
+    win.activate()
+    keyboard.press_and_release('pause')
 
 #language data for ocr
 tessdata = f"https://github.com/tesseract-ocr/tessdata/raw/main/{LANG}.traineddata"
