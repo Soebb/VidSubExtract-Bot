@@ -24,10 +24,8 @@ Bot = Client(
 )
 
 START_TXT = """
-Hi {}
-I am Subtitle Extractor Bot.
-> `I can extract hard-coded subtitle from videos.`
-Send me a video to get started.
+`لنمملدننپ
+ذدپپ`
 """
 
 START_BTN = InlineKeyboardMarkup(
@@ -39,7 +37,7 @@ START_BTN = InlineKeyboardMarkup(
 
 @Bot.on_message(filters.command(["start"]))
 async def start(bot, update):
-    text = START_TXT.format(update.from_user.mention)
+    text = START_TXT
     reply_markup = START_BTN
     await update.reply_text(
         text=text,
