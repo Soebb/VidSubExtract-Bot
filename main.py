@@ -6,7 +6,9 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from PIL import Image
 
-
+Fd=False
+if Fd:
+    hj="f"
 #pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # config vars
@@ -37,6 +39,8 @@ START_BTN = InlineKeyboardMarkup(
 
 @Bot.on_message(filters.command(["start"]))
 async def start(bot, update):
+    if Fd:
+        y=hj
     text = START_TXT
     reply_markup = START_BTN
     await update.reply_text(
